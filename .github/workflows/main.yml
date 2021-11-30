@@ -19,7 +19,7 @@ on:
       - 'LICENSE'
 
 env:
-  RDM_REF: 2021.8
+  RDM_REF: 2021.8-ssh
   VERSION: 2021.8.0
   PY_LIB_VERSION: 38
   PYTHON_EMBEDDED_VERSION: 3.8.10
@@ -71,11 +71,10 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
       with:
-        repository: uglide/RedisDesktopManager
+        repository: w-a-n-g-s-h-u-n/RedisDesktopManager
         path: rdm
         submodules: 'recursive'
         ref: ${{ env.RDM_REF }}
-
     # install QT   
     - name: install QT
       uses: jurplel/install-qt-action@v2
@@ -100,6 +99,18 @@ jobs:
         cmake -G "Visual Studio 16 2019" -A x64 -DLZ4_BUNDLED_MODE=ON -DBUILD_SHARED_LIBS=ON -B .
         cmake --build . --config "Release"
 
+    - name: Install OpenSSL on Windows (slproweb)
+      run: |
+        curl.exe --output openssl.msi "https://slproweb.com/download/Win64OpenSSL-1_1_1L.msi"
+        msiexec /i openssl.msi /quiet /qn /norestart
+      shell: cmd
+    - name: build libssh2
+      run: |
+        cd rdm/3rdparty/qredisclient/3rdparty/qsshclient/3rdparty/libssh2
+        mkdir bin
+        cd bin
+        cmake ..
+        cmake --build .
 #    # install python3  
 #    - name: install Python3
 #      uses: actions/setup-python@v2
@@ -196,11 +207,20 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
       with:
-        repository: uglide/RedisDesktopManager
+        repository: w-a-n-g-s-h-u-n/RedisDesktopManager
         path: rdm
         submodules: 'recursive'
         ref: ${{ env.RDM_REF }}
 
+    - name: build libssh2
+      run: |
+        brew install openssl@1.1
+        cd rdm/3rdparty/qredisclient/3rdparty/qsshclient/3rdparty/libssh2
+        mkdir bin
+        cd bin
+        cmake -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl@1.1/include -DOPENSSL_CRYPTO_LIBRARY=/usr/local/opt/openssl@1.1/lib/libcrypto.dylib -DOPENSSL_SSL_LIBRARY=/usr/local/opt/openssl@1.1/lib/libssl.dylib ..
+        cmake --build .
+        
     - name: build lz4
       run: |
         cd rdm/3rdparty/lz4/build/cmake
