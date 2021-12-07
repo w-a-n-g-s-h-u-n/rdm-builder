@@ -19,8 +19,8 @@ on:
       - 'LICENSE'
 
 env:
-  RDM_REF: 2021.9-ssh
-  VERSION: 2021.9.0
+  RDM_REF: 2021.9.1-ssh
+  VERSION: 2021.9.1
   PY_LIB_VERSION: 38
   PYTHON_EMBEDDED_VERSION: 3.8.10
   CMAKE_VS: Visual Studio 16 2019
@@ -74,7 +74,7 @@ jobs:
         cd bin
         cmake -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl@1.1/include -DOPENSSL_CRYPTO_LIBRARY=/usr/local/opt/openssl@1.1/lib/libcrypto.dylib -DOPENSSL_SSL_LIBRARY=/usr/local/opt/openssl@1.1/lib/libssl.dylib ..
         cmake --build .
-        
+
     - name: build lz4
       run: |
         cd rdm/3rdparty/lz4/build/cmake
